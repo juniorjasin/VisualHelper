@@ -38,9 +38,17 @@ import org.opencv.core.Mat;
       // int que contiene la cantidad de opciones
       public int size = 4;
 
+      // guardo el centro de la cara
+      public int xFaceCenter = 0;
+
+      // index que me dice la opcion que esta iluminada (a la que se esta apuntando con la cara)
+      public int index = -1;
 
       // cargo la libreria (se hace en tiempo de ejecucion)
       static {
+          // segun lo que lei: en android 4.2 por un problema tiene problemas para encontrar
+          // las librerias, por eso agrego la primera linea
+          System.loadLibrary("opencv_java3");
           System.loadLibrary("MyOpencvLibs");
       }
 
@@ -71,6 +79,8 @@ import org.opencv.core.Mat;
         // <application android:theme="@style/Theme.AppCompat.NoActionBar" >
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
          WindowManager.LayoutParams.FLAG_FULLSCREEN);
+
+        Log.d("VISUAL HELPER", "onCreate");
 
         setContentView(R.layout.activity_main);
 
@@ -153,40 +163,50 @@ import org.opencv.core.Mat;
       public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
           mRgba = inputFrame.rgba();
 
-          Object extra = new Object();
-          int xFaceCenter = 0;
+          //*
+          if (isCalibrated(mRgba)){
 
+              Log.d("isCalibrated", "esta calibrado ;)");
+              Log.d("xFacecenter", Integer.toString(xFaceCenter));
+
+          }
+
+          //*/
+
+
+
+
+
+
+          // retorno null si no quiero que se vea la imagen pero que se tome cada frame de la camara
+          return mRgba;
+      }
+
+      public boolean isCalibrated(Mat mRgba){
+
+          if(calibrated && !startCalibration) return true;
           // si startCalibration esta en true ahi podemos calibrar y se retornara el centro de la cara
           // para que luego se detecte las variaciones
           if(startCalibration == true){
               // faceDetection deberia retornar el centro de la cara
-              xFaceCenter = OpencvNativeClass.faceDetection(mRgba.getNativeObjAddr(), size, extra);
-          }
+              int xCentro = OpencvNativeClass.smileDetection(mRgba.getNativeObjAddr());
+              if ( xCentro != -1 )
+                  // si entro es que detecto al menos una sonrisa y la puedo utilizar como referencia
 
+                  xFaceCenter = xCentro;
+              calibrated = true; // en principio no voy a dejar que se descalibre
+
+              // TODO: podria tambien (mas adelante) pedir que se calibre mas en el centro de la pantalla
+          }
           if(!startCalibration){
               if(xFaceCenter == -1){
 
-                  // crear un AlertDialog que indique que no se ha encontrado sonrisa
-
-                  // no se porque no funciona
-
-                  /*
-                  AlertDialog.Builder builder = new AlertDialog.Builder(MainActivity.this);
-                  builder.setMessage("titulo")
-                          .setPositiveButton("ok", new DialogInterface.OnClickListener() {
-                              public void onClick(DialogInterface dialog, int id) {
-                                  // FIRE ZE MISSILES!
-                              }
-                          });
-                  builder.show();
-                  */
+                  // TODO: crear un AlertDialog que indique que no se ha encontrado sonrisa
               }
           }
 
           Log.d("xFaceCenter", Integer.toString(xFaceCenter));
 
-
-          // retorno null si no quiero que se vea la imagen pero que se tome cada frame de la camara
-          return mRgba;
+          return calibrated;
       }
   }

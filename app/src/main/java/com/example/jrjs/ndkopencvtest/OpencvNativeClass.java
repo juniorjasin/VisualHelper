@@ -8,6 +8,7 @@ package com.example.jrjs.ndkopencvtest;
 // no se que hay que retornar del lado de C++
 
 public class OpencvNativeClass {
-    public native static int convertGray(long matAddrRgba, long matAddrGray);
-    public native static int faceDetection(long addrRgba, long size, Object extra);
+
+    public native static int smileDetection(long addrRgba);
+    public native static int getIndex(long addrRgba, int xFaceCenter ,int size);
 }
