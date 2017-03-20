@@ -4,11 +4,16 @@
 #include "OpencvNativeClass.h"
 #include <stdio.h>
 
+// TODO: mejorar MatProcessor porque cuando llama a detectSmile llama a detectFace
+// y convierte la imagen a gris dos veces
+
+
 // detecto sonrisa y retorno el punto en X del centro de la cara
 JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_smileDetection
         (JNIEnv *, jclass, jlong addrRgba){
 
     Mat &frame = *(Mat*)addrRgba;
+
     MatProcessor m;
 
     if(m.detectSmile(frame)){
@@ -27,14 +32,42 @@ JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_smi
 
 
 
-JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_faceDetection
-        (JNIEnv *, jclass, jlong addrRgba, jint size){
+JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_getIndex
+        (JNIEnv *, jclass, jlong addrRgba, jint xFaceCenter, jint size){
 
+    Mat &frame = *(Mat*)addrRgba;
+    MatProcessor mp;
+    int index = -99;
+
+    if(mp.detectFace(frame)){
+        Rect cal = mp.initCalibration();
+
+        int dx = xFaceCenter - cal.x;
+        int relAnchoCara_Opciones = cal.width / size;
+        index = size - ( dx / relAnchoCara_Opciones) - 1;
+
+
+
+
+        char buffer[30];
+        sprintf(buffer,"%d", index);
+        putText(frame, buffer, cvPoint(xFaceCenter,xFaceCenter),
+                FONT_HERSHEY_COMPLEX_SMALL, 5, cvScalar(200,200,250), 1, CV_AA);
+
+        return (jint) index;
+
+    } else{
+
+
+        putText(frame, "no hay rostro", cvPoint(xFaceCenter,xFaceCenter),
+                FONT_HERSHEY_COMPLEX_SMALL, 5, cvScalar(200,200,250), 1, CV_AA);
+        return (jint) -99;
+    }
 
 }
 
 
-//*
+/*
 int detect(Mat &frame, int size){
 
     // los LBP funcionan mejor que los haarcascade
@@ -121,7 +154,7 @@ int getIndex(int size, Rect calibration, int xFaceCenter){
     return size - ( ( xFaceCenter - calibration.x ) / ( calibration.width / size ) ) - 1;
 }
 
-//*/
+
 void Calibration(Rect currentFace){
     calibration.x = currentFace.x + currentFace.width / 4;
     calibration.y = currentFace.y + currentFace.height / 4;
@@ -136,3 +169,4 @@ int toGray(Mat img, Mat &gray){
     }
     return 0;
 }
+//*/

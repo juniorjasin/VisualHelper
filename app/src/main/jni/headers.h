@@ -20,7 +20,6 @@ int getIndex(int size, Rect calibration, int xFaceCenter);
 
 // variables globales
 bool calibrated = false;
-Rect calibration;
 
 // lo que devuelve el metodo faceDetection
 int xCentroCara = -1;

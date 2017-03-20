@@ -6,12 +6,17 @@
 #define VISUALHELPER_MATPROCESSOR_H
 
 #include <opencv2/opencv.hpp>
+#include <vector>
+
 using namespace cv;
 
 class MatProcessor {
 
-
+    // centro en X de la cara
     int xFaceCenter;
+
+    // Rect que utilizo para calcular el index
+    Rect calibration;
 
     // guardo caras y sonrisas que se encuentrem
     std::vector <Rect> faces;
@@ -21,13 +26,18 @@ class MatProcessor {
     Rect currentFace;
     Rect currentSmile;
 
+    // guardo Mat convertido a gris para no hacerlo una sola vez
+    Mat frame_gray;
+
+    void setFrameGray(Mat fgray){ this->frame_gray = fgray; }
+    Mat getFrameGray(){ return this->frame_gray; }
+
 public:
 
-    MatProcessor():xFaceCenter(-1){
-
+    MatProcessor():xFaceCenter(-1) {
     }
 
-    int getXFaceCenter(){ return xFaceCenter;}
+    int getXFaceCenter(){ return xFaceCenter; }
 
     // retorna true si detecta una cara
     bool detectFace(Mat &frame) {
@@ -44,9 +54,13 @@ public:
         };
 
         // no se porque lo convierte a gris y luego lo detecta
+
         Mat frame_gray;
         cvtColor(frame, frame_gray, CV_BGR2GRAY); // porque lo cambia a gris ??
+        // calcula el histograma y otras cosas para aumentar el contraste
         equalizeHist(frame_gray, frame_gray);
+
+        setFrameGray(frame_gray);
 
         //-- Detect faces // con estos valores se ve mas fluido
         face_cascade.detectMultiScale(frame_gray, faces, 1.1, 2, 0 | CV_HAAR_SCALE_IMAGE, Size(300, 300));
@@ -60,6 +74,7 @@ public:
         return false;
     }
 
+    // retorna true si detecta cara
     bool detectSmile(Mat &frame) {
 
         if (detectFace(frame)){
@@ -73,9 +88,7 @@ public:
             if( !smile_cascade.load( smilePath ) ){ printf("--(!)Error loading\n"); return false; };
 
             // no se porque lo convierte a gris y luego lo detecta
-            Mat frame_gray;
-            cvtColor( frame, frame_gray, CV_BGR2GRAY ); // porque lo cambia a gris ??
-            equalizeHist( frame_gray, frame_gray );
+            Mat frame_gray = getFrameGray();
 
             // creo Mat con cara y detecto sonrisa
             Mat face(frame_gray, Rect(faces[0].height, faces[0].width, faces[0].x,faces[0].y));
@@ -94,6 +107,23 @@ public:
             // si no hay cara no se va a encontrar sonrisa
             return false;
         }
+    }
+
+
+    Rect getCurrentFace(){ return currentFace; }
+    Rect getCalibration(){ return calibration; }
+
+    // me setea los valores de calibration (variable en el proyecto ottaa pero no se bien
+    // porque los setea asi )
+
+    Rect initCalibration(){
+
+        this->calibration.x = this->currentFace.x + this->currentFace.width / 4;
+        this->calibration.y = this->currentFace.y + this->currentFace.height / 4;
+        this->calibration.width = this->currentFace.width / 2;
+        this->calibration.height = this->currentFace.height / 2;
+
+        return this->calibration;
     }
 
 };

@@ -8,11 +8,13 @@
     tools:context="com.example.jrjs.ndkopencvtest.MainActivity">
 
     <org.opencv.android.JavaCameraView
-        android:layout_width="match_parent"
-        android:layout_height="match_parent"
+        android:layout_width="1050px"
+        android:layout_height="750px"
         android:id="@+id/java_camera_view"
         opencv:camera_id="front"
-        />
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true" />
 
     <Button
         android:text="@string/buttonCalibrar"
@@ -22,6 +24,55 @@
         android:layout_alignParentBottom="true"
         android:layout_alignParentRight="true"
         android:layout_alignParentEnd="true" />
+
+
+    <ImageView
+
+        android:id="@+id/img1"
+        android:layout_width="600px"
+        android:layout_height="600px"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:clickable="true"
+        android:focusableInTouchMode="true"
+        />
+
+
+    <ImageView
+
+        android:id="@+id/img2"
+        android:layout_width="600px"
+        android:layout_height="600px"
+        android:layout_marginLeft="151dp"
+        android:layout_marginStart="151dp"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentStart="true"
+        android:clickable="true"
+        android:focusableInTouchMode="true"/>
+
+    <ImageView
+
+        android:id="@+id/img3"
+        android:layout_width="600px"
+        android:layout_height="600px"
+        android:layout_alignTop="@+id/img2"
+        android:layout_toRightOf="@+id/img2"
+        android:layout_toEndOf="@+id/img2"
+        android:clickable="true"
+        android:focusableInTouchMode="true"/>
+
+    <ImageView
+
+        android:id="@+id/img4"
+        android:layout_width="600px"
+        android:layout_height="600px"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/img3"
+        android:layout_toEndOf="@+id/img3"
+        android:clickable="true"
+        android:focusableInTouchMode="true"/>
 
 
 </RelativeLayout>
