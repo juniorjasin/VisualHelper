@@ -31,7 +31,7 @@ so manually move them:
 * javadoc/org/opencv/android/OpenCVLoader.html
 * javadoc/org/opencv/android/Utils.html
 * javadoc/org/opencv/android/package-frame.html
-* javadoc/org/opencv/android/package-summary.html
+* javadoc/org/opencv/android/package-icon.html
 * javadoc/org/opencv/android/package-tree.html
 * javadoc/org/opencv/calib3d/
 * javadoc/org/opencv/calib3d/Calib3d.html
@@ -39,7 +39,7 @@ so manually move them:
 * javadoc/org/opencv/calib3d/StereoMatcher.html
 * javadoc/org/opencv/calib3d/StereoSGBM.html
 * javadoc/org/opencv/calib3d/package-frame.html
-* javadoc/org/opencv/calib3d/package-summary.html
+* javadoc/org/opencv/calib3d/package-icon.html
 * javadoc/org/opencv/calib3d/package-tree.html
 * javadoc/org/opencv/core/
 * javadoc/org/opencv/core/Algorithm.html
@@ -74,11 +74,11 @@ so manually move them:
 * javadoc/org/opencv/core/TermCriteria.html
 * javadoc/org/opencv/core/TickMeter.html
 * javadoc/org/opencv/core/package-frame.html
-* javadoc/org/opencv/core/package-summary.html
+* javadoc/org/opencv/core/package-icon.html
 * javadoc/org/opencv/core/package-tree.html
 * javadoc/org/opencv/engine/
 * javadoc/org/opencv/engine/package-frame.html
-* javadoc/org/opencv/engine/package-summary.html
+* javadoc/org/opencv/engine/package-icon.html
 * javadoc/org/opencv/engine/package-tree.html
 * javadoc/org/opencv/features2d/
 * javadoc/org/opencv/features2d/AKAZE.html
@@ -101,12 +101,12 @@ so manually move them:
 * javadoc/org/opencv/features2d/ORB.html
 * javadoc/org/opencv/features2d/Params.html
 * javadoc/org/opencv/features2d/package-frame.html
-* javadoc/org/opencv/features2d/package-summary.html
+* javadoc/org/opencv/features2d/package-icon.html
 * javadoc/org/opencv/features2d/package-tree.html
 * javadoc/org/opencv/imgcodecs/
 * javadoc/org/opencv/imgcodecs/Imgcodecs.html
 * javadoc/org/opencv/imgcodecs/package-frame.html
-* javadoc/org/opencv/imgcodecs/package-summary.html
+* javadoc/org/opencv/imgcodecs/package-icon.html
 * javadoc/org/opencv/imgcodecs/package-tree.html
 * javadoc/org/opencv/imgproc/
 * javadoc/org/opencv/imgproc/CLAHE.html
@@ -115,7 +115,7 @@ so manually move them:
 * javadoc/org/opencv/imgproc/Moments.html
 * javadoc/org/opencv/imgproc/Subdiv2D.html
 * javadoc/org/opencv/imgproc/package-frame.html
-* javadoc/org/opencv/imgproc/package-summary.html
+* javadoc/org/opencv/imgproc/package-icon.html
 * javadoc/org/opencv/imgproc/package-tree.html
 * javadoc/org/opencv/ml/
 * javadoc/org/opencv/ml/ANN_MLP.html
@@ -132,7 +132,7 @@ so manually move them:
 * javadoc/org/opencv/ml/StatModel.html
 * javadoc/org/opencv/ml/TrainData.html
 * javadoc/org/opencv/ml/package-frame.html
-* javadoc/org/opencv/ml/package-summary.html
+* javadoc/org/opencv/ml/package-icon.html
 * javadoc/org/opencv/ml/package-tree.html
 * javadoc/org/opencv/objdetect/
 * javadoc/org/opencv/objdetect/BaseCascadeClassifier.html
@@ -140,7 +140,7 @@ so manually move them:
 * javadoc/org/opencv/objdetect/HOGDescriptor.html
 * javadoc/org/opencv/objdetect/Objdetect.html
 * javadoc/org/opencv/objdetect/package-frame.html
-* javadoc/org/opencv/objdetect/package-summary.html
+* javadoc/org/opencv/objdetect/package-icon.html
 * javadoc/org/opencv/objdetect/package-tree.html
 * javadoc/org/opencv/photo/
 * javadoc/org/opencv/photo/AlignExposures.html
@@ -159,12 +159,12 @@ so manually move them:
 * javadoc/org/opencv/photo/TonemapMantiuk.html
 * javadoc/org/opencv/photo/TonemapReinhard.html
 * javadoc/org/opencv/photo/package-frame.html
-* javadoc/org/opencv/photo/package-summary.html
+* javadoc/org/opencv/photo/package-icon.html
 * javadoc/org/opencv/photo/package-tree.html
 * javadoc/org/opencv/utils/
 * javadoc/org/opencv/utils/Converters.html
 * javadoc/org/opencv/utils/package-frame.html
-* javadoc/org/opencv/utils/package-summary.html
+* javadoc/org/opencv/utils/package-icon.html
 * javadoc/org/opencv/utils/package-tree.html
 * javadoc/org/opencv/video/
 * javadoc/org/opencv/video/BackgroundSubtractor.html
@@ -178,17 +178,17 @@ so manually move them:
 * javadoc/org/opencv/video/SparsePyrLKOpticalFlow.html
 * javadoc/org/opencv/video/Video.html
 * javadoc/org/opencv/video/package-frame.html
-* javadoc/org/opencv/video/package-summary.html
+* javadoc/org/opencv/video/package-icon.html
 * javadoc/org/opencv/video/package-tree.html
 * javadoc/org/opencv/videoio/
 * javadoc/org/opencv/videoio/VideoCapture.html
 * javadoc/org/opencv/videoio/VideoWriter.html
 * javadoc/org/opencv/videoio/Videoio.html
 * javadoc/org/opencv/videoio/package-frame.html
-* javadoc/org/opencv/videoio/package-summary.html
+* javadoc/org/opencv/videoio/package-icon.html
 * javadoc/org/opencv/videoio/package-tree.html
 * javadoc/overview-frame.html
-* javadoc/overview-summary.html
+* javadoc/overview-icon.html
 * javadoc/overview-tree.html
 * javadoc/package-list
 * javadoc/resources/
@@ -222,5 +222,5 @@ it is due to a bug or limitation of the Eclipse to Gradle importer,
 please file a bug at http://b.android.com with category
 Component-Tools.
 
-(This import summary is for your information only, and can be deleted
+(This import icon is for your information only, and can be deleted
 after import once you are satisfied with the results.)

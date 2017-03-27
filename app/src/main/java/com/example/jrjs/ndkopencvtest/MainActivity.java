@@ -1,6 +1,7 @@
   package com.example.jrjs.ndkopencvtest;
 
 
+import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
@@ -23,7 +24,13 @@ import org.opencv.core.CvType;
 import org.opencv.core.Mat;
 import org.opencv.core.Size;
 import org.opencv.imgproc.Imgproc;
+import org.xmlpull.v1.XmlPullParserException;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -70,8 +77,16 @@ import static org.opencv.imgproc.Imgproc.resize;
 
       // contador de sonrisas, para seleccionar una opcion luego de que detecte
       // este numero consecutivo de sonrisas
-      public int smileCounter = 40;
+      public int smileCounter = 0;
 
+      // clase para leer ottaa.xml
+      XMLReader xmlReader = new XMLReader();
+
+      // List de Nodos que conforman el grafo
+      Graph gr = new Graph();
+
+      // cantidad de imagenes cargadas (que se ven). arranca con 4 imagenes (0 al 3)
+      public int imageCounter = 3 ;
 
       // cargo la libreria (se hace en tiempo de ejecucion)
       static {
@@ -108,70 +123,139 @@ import static org.opencv.imgproc.Imgproc.resize;
         // <application android:theme="@style/Theme.AppCompat.NoActionBar" >
         getWindow().setFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN,
          WindowManager.LayoutParams.FLAG_FULLSCREEN);
-
-        Log.d("VISUAL HELPER", "onCreate");
-
         setContentView(R.layout.activity_main);
+
 
         // apuntamos nuestro objeto al que añadimos en activity_main.xml
         javaCameraView = (JavaCameraView) findViewById(R.id.java_camera_view);
         javaCameraView.setVisibility(View.VISIBLE);
         javaCameraView.setCvCameraViewListener(this);
 
-        // obtengo medidas de la pantalla
-        DisplayMetrics displayMetrics = new DisplayMetrics();
-        getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
-        srcHeight = displayMetrics.heightPixels;
-        srcWidth = displayMetrics.widthPixels;
-
-        im1 = (ImageView) findViewById(R.id.img1);
-        im2 = (ImageView) findViewById(R.id.img2);
-        im3 = (ImageView) findViewById(R.id.img3);
-        im4 = (ImageView) findViewById(R.id.img4);
-
-        // seteo en tiempo de ejecucion las imagenes
-        // uso Background y no setSrc porque lei que con src
-        // se superpone la imagen encima de la otra, pero no se como comprobar si es cierto
-        im1.setImageResource(R.drawable.hola);
-        im2.setImageResource(R.drawable.tengoquieroestoy);
-        im3.setImageResource(R.drawable.familia);
-        im4.setImageResource(R.drawable.responder);
+        initScrenSize();
 
 
-        // cargo las imagenes en la lista
-        imList.add(im1);
-        imList.add(im2);
-        imList.add(im3);
-        imList.add(im4);
+        // parsea xml, carga nodos y grafo
+        // luego se cargan las primeras 4 imagenes
+        createGraph();
+
+
+
+
 
         //*
         // hago la accion para cuando se presione el boton calibrar (ponerlo en un metodo)
         calibrar = (Button) findViewById(R.id.iButtonCalibrar);
-        calibrar.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View v) {
-                if(!startCalibration) {
-                    startCalibration = true;
-                    calibrated = false;
-                    calibrar.setText("fin calibrado");
+        calibrarCara(calibrar);
 
-                }
-                else {
-                    calibrar.setText("Calibrar");
-                    startCalibration = false;
-
-                    if(isCalibrated()){
-                        // se la comente porque me parece que es molesto pero la otra si es importante
-                        //dialogoAviso("Calibracion", "Calibracion exitosa");
-                    }else{
-                        dialogoAviso("Calibracion", "Fallo calibracion");
-                    }
-                }
-            }
-        });
         //*/
-
     }
+
+      private void createGraph() {
+          // primero obtener la lista que retorna parse
+          // luego llamar a metodos que crean el grafo (todavia no esta hecho)
+
+          // direccion almacenamiento
+          String localStorage = "/storage/emulated/0/data/ottaa.xml";
+          File file = new File(localStorage);
+
+          // creo InputStream (clase que recibe datos) para levantar archivo xml
+          InputStream in = null;
+          try {
+              in = new FileInputStream(file);
+          } catch (FileNotFoundException e) {
+              Log.d("InputStream", e.toString());
+              e.printStackTrace();
+          }
+
+          // xmlreader
+          try {
+              gr.setGraph(xmlReader.parse(in));
+          } catch (XmlPullParserException e) {
+              Log.d("xmlReader1", e.toString());
+              e.printStackTrace();
+          } catch (IOException e) {
+              e.printStackTrace();
+              Log.d("xmlReader", "exception 2");
+          }
+
+          // ya tengo el graph en la clase grafo.
+
+          // carga el primer nodo y retorna los hijos (nombre de las imagenes)
+          // y estas se cargan en la vista
+          // luego, segun el nodo que se este viendo, hago lo mismo.
+
+          List<String> childs = gr.getFirstChilds();
+          // ahora inicializo las imagenes segun los hijos del nodo inicial (que no tiene nada)
+
+          initImages(childs);
+
+      }
+
+      // inicializa srcHeight y srcWidth para calcular el tamaño de las imagnes y camara
+      public void initScrenSize(){
+          // obtengo medidas de la pantalla
+          DisplayMetrics displayMetrics = new DisplayMetrics();
+          getWindowManager().getDefaultDisplay().getMetrics(displayMetrics);
+          srcHeight = displayMetrics.heightPixels;
+          srcWidth = displayMetrics.widthPixels;
+
+      }
+
+      // apunto imagenes, cargo source inicial y las agrego a la lista
+      public void initImages(List<String> images){
+          // apunto las imagenes a los widgets
+          im1 = (ImageView) findViewById(R.id.img1);
+          im2 = (ImageView) findViewById(R.id.img2);
+          im3 = (ImageView) findViewById(R.id.img3);
+          im4 = (ImageView) findViewById(R.id.img4);
+
+          // cargo las imagenes en la lista
+          imList.add(im1);
+          imList.add(im2);
+          imList.add(im3);
+          imList.add(im4);
+
+          // seteo en tiempo de ejecucion las imagenes
+          // uso Background y no setSrc porque lei que con src
+          // se superpone la imagen encima de la otra, pero no se como comprobar si es cierto
+          //int resourceId = Activity.getResources().getIdentifier(images.get(0), "drawable", getPackageName());
+
+          //int res = getResources().getIdentifier("frio", "drawable", getPackageName());
+          //im1.setImageResource(res);
+
+          int i = 0;
+          for(String imgName : images){
+              int idResource = getResources().getIdentifier(imgName, "drawable", getPackageName());
+              imList.get(i).setImageResource(idResource);
+              i++;
+          }
+      }
+
+      // funcionamiento de buton para calibrar la cara
+      public void calibrarCara(final Button buttonCalibrar){
+          buttonCalibrar.setOnClickListener(new View.OnClickListener() {
+              @Override
+              public void onClick(View v) {
+                  if(!startCalibration) {
+                      startCalibration = true;
+                      calibrated = false;
+                      buttonCalibrar.setText("fin calibrado");
+
+                  }
+                  else {
+                      buttonCalibrar.setText("Calibrar");
+                      startCalibration = false;
+
+                      if(isCalibrated()){
+                          // se la comente porque me parece que es molesto pero la otra si es importante
+                          //dialogoAviso("Calibracion", "Calibracion exitosa");
+                      }else{
+                          dialogoAviso("Calibracion", "Fallo calibracion");
+                      }
+                  }
+              }
+          });
+      }
 
       // muestro AlertDialog con mensaje
       public void dialogoAviso(String title, String message){
@@ -189,14 +273,12 @@ import static org.opencv.imgproc.Imgproc.resize;
                   .show();
       }
 
-
       @Override
       protected void onPause(){
           super.onPause();
           if(javaCameraView != null)
               javaCameraView.disableView();
       }
-
 
       @Override
       protected void onDestroy(){
@@ -219,7 +301,6 @@ import static org.opencv.imgproc.Imgproc.resize;
       }
 
 
-
       // inicializo los Mat que cree arriba con los parametros que se obtiene de la camara
       // pueden variara si el <<widget>> de la camara (en el xml) es mas grande o mas chico
       @Override
@@ -235,72 +316,88 @@ import static org.opencv.imgproc.Imgproc.resize;
           mRgba.release();
       }
 
+
+      public boolean aux = true;
+
       // aca se recibe cada uno de los frames que se va a procesar
       @Override
       public Mat onCameraFrame(CameraBridgeViewBase.CvCameraViewFrame inputFrame) {
           mRgba = inputFrame.rgba();
           Core.flip(mRgba,mRgba,1); // invierto los pixeles asi nos vemos como si fuera una espejo
 
+          // agrando la imagen para analizarla (no seria necesario agrandarlo al tamaño de la pantalla
+          // podria hacerla un poco mas chica si ncesito mejor performance)
           Mat rz = new Mat();
           resize(mRgba, rz, new Size(srcWidth, srcHeight));
 
           if (!isCalibrated()){
-
               // hago esto dentro y no fuera porque consumia recursos y crasheaba
-              // agrando la imagen para analizarla (no seria necesario agrandarlo al tamaño de la pantalla
-              // podria hacerla un poco mas chica si ncesito mejor performance)
-
               calibrar(rz);
           }
 
           if(xFaceCenter != -1){
               // ya esta calibrado (xFaceCenter tiene un valor)
-
               // obtengo el index para saber que imagen seleccionar
               index = OpencvNativeClass.getIndex(rz.getNativeObjAddr(),xFaceCenter,size);
           }
 
-          // TODO: segun la opcion index que se eligio, saltar a otra opcion
-          // 1) hacer una prueba sencilla que cuando se detecte sonrisa cambie algo
-          // lo hice
-          // 2) ver la forma de utilizar arbol ottaa.xml -> creo que deberia hacer un selector
-          // no me va a servir porque el selector hace cambios en un solo widget (imagen en este caso)
-          // y no es practico hacer uno por cada imagen
-          // 3) acomodar las imagenes para que esten centradas segun el tamaño de la pantalla
-
-          // TODO: tomar muchos frames de sonrisa para que se seleccione la opcion
-
           // si se obtuvo un indice valido que se resalte la opcion
           if(index != -1){
               resaltarOpcion(index);
-
               int sd = OpencvNativeClass.smileDetection(rz.getNativeObjAddr());
-              Log.d("smileDet", Integer.toString(sd));
-              if( sd != -1){
-                  // TODO: encontro sonrisa hago mi accion
-                  smileCounter++;
-                  if(smileCounter >= 4){ // cuando esta de frente detecta sonrisas por mas que no sonria con 4
+              //Log.d("smileDet", Integer.toString(sd));
+              Log.d("smileCounter", String.valueOf(smileCounter));
+              Log.d("Sonrisa", String.valueOf(sd));
 
+              if( sd != -1){
+
+
+                  smileCounter++;
+                  Log.d("smileCounter", String.valueOf(smileCounter));
+                  Log.d("imageCounter", String.valueOf(imageCounter));
+                  Log.d("index outside", String.valueOf(index));
+                  //Log.d("index", String.valueOf(index));
+                  if(smileCounter >= 10 && index >= 0 && index < imageCounter) {
+                      // cuando esta de frente detecta sonrisas por mas que no sonria con 4
                       Imgproc.cvtColor(mRgba,mRgba,COLOR_RGB2GRAY);
-                      Log.d("smileDet Gray", Integer.toString(sd));
+                      //Log.d("smileDet Gray", Integer.toString(sd));
+                      Log.d("index inside", String.valueOf(index));
+
+                      // reinicio el contador para q en la proxima vuelta
+                      // no siga detectando sonrisas
+                      smileCounter = 0;
+
+                      //Log.d("smileCounter", String.valueOf(smileCounter));
+
+                      //TODO: podria agregar que hayan dos o mas index iguales para seleccionar la
+                      // imagen, para no selccionar una imagen no deseada
+
+                      //*
+                      //Log.d("index", String.valueOf(index));
+                      String imgName = gr.getCurrentNodo().children.get(index);
+                      //Log.d("size children", String.valueOf(gr.getCurrentNodo().children.size()));
+                      //Log.d("hijo al que miro", imgName);
+                      Nodo n = gr.getNodo(imgName); // esto retorna null
+
+                      if(n != null){
+                        //  Log.d("NODO", "DISTINTO DE NULL");
+                          gr.setCurrentNodo(n);
+                          List<String> ch = gr.getCurrentNodo().children;
+                          updateImages(ch);
+                      }else{
+                          //Log.d("Nodo", "NULL");
+                      }
+
+                      //gr.setCurrentNodo(n);
+                      //List<String> ch = gr.getCurrentNodo().children;
+                      //updateImages(ch);
+                      //*/
 
                   }
-              } else smileCounter = 0;
+              } else {
+                  smileCounter = 0;
+              }
           }
-
-
-          /* funcionamiento del programa en QT:
-             1)En el main se crea un objeto internface, que este (constructor) crea un Graph, y luego
-             lo inicializa y le pide el nodo inicial al grafo
-             2) Primero con la clase XMLreader levanta el xml y lo parsea, busca en las etiquetas <node>
-             los datos que necesita
-             3) con esto crea un objeto de la clase Node, que tiene los atributos (id, title, img.png, etc)
-             y los agrega un QVector de nodes
-             4)
-
-
-          */
-
 
 
 
@@ -308,6 +405,30 @@ import static org.opencv.imgproc.Imgproc.resize;
           rz.release();
           // retorno null si no quiero que se vea la imagen pero que se tome cada frame de la camara
           return mRgba;
+      }
+
+      // actualizo las imagenes que se muestran
+      private void updateImages(final List<String> nextImages) {
+
+          runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+
+                  // limpio todas las imagenes cargadas
+                  for(ImageView im : imList) {
+                      im.setImageDrawable(null);
+                  }
+
+                  // seteo las imagnes que vienen en la list nextImages
+                  imageCounter = 0;
+                  for(String imgName : nextImages){
+                      int idResource = getResources().getIdentifier(imgName, "drawable", getPackageName());
+                      imList.get(imageCounter).setImageResource(idResource);
+                      imageCounter++;
+                  }
+
+              }
+          });
       }
 
 

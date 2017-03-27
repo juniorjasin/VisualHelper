@@ -92,7 +92,7 @@ public:
 
             // creo Mat con cara y detecto sonrisa
             Mat face(frame_gray, Rect(faces[0].height, faces[0].width, faces[0].x,faces[0].y));
-            smile_cascade.detectMultiScale(face, smiles, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(300, 300));
+            smile_cascade.detectMultiScale(face, smiles, 1.1, 2, 0 | CASCADE_SCALE_IMAGE, Size(200, 200));
 
             // verifico que haya sonrisas
             if(smiles.size() > 0){
