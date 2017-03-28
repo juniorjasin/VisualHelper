@@ -1,0 +1,580 @@
+<nodes>
+    <node>
+        <id>inicio</id>
+        <title>Inicio</title>
+        <icon>inicio.png</icon>
+        <children>hola,tengoquieroestoy,familia,responder</children>
+        <text></text>
+    </node>
+    <node>
+        <id>responder</id>
+        <title>Responder</title>
+        <icon>responder.png</icon>
+        <children>si,no,genial,noparanada</children>
+        <text></text>
+    </node>
+    <node>
+        <id>noparanada</id>
+        <title>No, para nada</title>
+        <icon>noparanada.png</icon>
+        <children>muchasgracias,meayudas,yvos</children>
+        <text>no, para nada</text>
+    </node>
+    <node>
+        <id>genial</id>
+        <title>Genial</title>
+        <icon>genial.png</icon>
+        <children>muchasgracias,meayudas,yvos</children>
+        <text>¡genial!</text>
+    </node>
+    <node>
+        <id>no</id>
+        <title>No</title>
+        <icon>no.png</icon>
+        <children>muchasgracias,meayudas,yvos</children>
+        <text>no</text>
+    </node>
+    <node>
+        <id>si</id>
+        <title>Sí</title>
+        <icon>si.png</icon>
+        <children>muchasgracias,meayudas,yvos</children>
+        <text>sí</text>
+    </node>
+    <node>
+        <id>hola</id>
+        <title>Hola</title>
+        <icon>hola.png</icon>
+        <children>comoestas,buenosdias,tengoquieroestoy,familia</children>
+        <text>hola</text>
+    </node>
+    <node>
+        <id>familia</id>
+        <title>Familia</title>
+        <icon>familia.png</icon>
+        <children>mama,papa,abuelo,hermano</children>
+    </node>
+    <node>
+        <id>hermano</id>
+        <title>Hermano</title>
+        <icon>hermano.png</icon>
+        <children>comoestas,tengo,quiero,estoy</children>
+        <text>hermano</text>
+    </node>
+    <node>
+        <id>abuelo</id>
+        <title>Abuelo</title>
+        <icon>abuelo.png</icon>
+        <children>comoestas,tengo,quiero,estoy</children>
+        <text>abuelo</text>
+    </node>
+    <node>
+        <id>papa</id>
+        <title>Papá</title>
+        <icon>papa.png</icon>
+        <children>comoestas,tengo,quiero,estoy</children>
+        <text>papá</text>
+    </node>
+    <node>
+        <id>mama</id>
+        <title>Mamá</title>
+        <icon>mama.png</icon>
+        <children>comoestas,tengo,quiero,estoy</children>
+        <text>mamá</text>
+    </node>
+    <node>
+        <id>tengoquieroestoy</id>
+        <title>Tengo - Quiero - Estoy</title>
+        <icon>tengoquieroestoy.png</icon>
+        <children>tengo,quiero,estoy</children>
+    </node>
+    <node>
+        <id>buenosdias</id>
+        <title>Buenos días</title>
+        <icon>buenosdias.png</icon>
+        <children>tengo,quiero,estoy</children>
+        <text>buenos días</text>
+    </node>
+    <node>
+        <id>comoestas</id>
+        <title>¿Cómo estás?</title>
+        <icon>comoestas.png</icon>
+        <children>tengo,quiero,estoy</children>
+        <text>¿cómo estás?</text>
+    </node>
+    <node>
+        <id>estoy</id>
+        <title>Estoy</title>
+        <icon>estoy.png</icon>
+        <children>estadoemocional,emocion,enfermo,posicion</children>
+        <text>estoy</text>
+    </node>
+    <node>
+        <id>posicion</id>
+        <title>Posición</title>
+        <icon>posicion.png</icon>
+        <children>aca,lugar,buscando,haciendo</children>
+        <text></text>
+    </node>
+    <node>
+        <id>lugar</id>
+        <title>Lugar</title>
+        <icon>lugar.png</icon>
+        <children>casa,escuela,lugarbano,patio</children>
+        <text></text>
+    </node>
+    <node>
+        <id>patio</id>
+        <title>Patio</title>
+        <icon>patio.png</icon>
+        <children>none</children>
+        <text>en el patio</text>
+    </node>
+    <node>
+        <id>lugarbano</id>
+        <title>Baño</title>
+        <icon>bano.png</icon>
+        <children>none</children>
+        <text>en el baño</text>
+    </node>
+    <node>
+        <id>escuela</id>
+        <title>Escuela</title>
+        <icon>escuela.png</icon>
+        <children>muchasgracias</children>
+        <text>en la escuela</text>
+    </node>
+    <node>
+        <id>casa</id>
+        <title>Casa</title>
+        <icon>casa.png</icon>
+        <children>none</children>
+        <text>en la casa</text>
+    </node>
+    <node>
+        <id>aca</id>
+        <title>Acá</title>
+        <icon>aca.png</icon>
+        <children>none</children>
+        <text>aquí</text>
+    </node>
+    <node>
+        <id>enfermo</id>
+        <title>Enfermo</title>
+        <icon>enfermo.png</icon>
+        <children>dolor,gripe,resfrio,moreton</children>
+        <text></text>
+    </node>
+    <node>
+        <id>moreton</id>
+        <title>Moretón</title>
+        <icon>moreton.png</icon>
+        <children>meayudas</children>
+        <text>con un moretón</text>
+    </node>
+    <node>
+        <id>resfrio</id>
+        <title>Resfrío</title>
+        <icon>resfrio.png</icon>
+        <children>meayudas</children>
+        <text>resfriado</text>
+    </node>
+    <node>
+        <id>gripe</id>
+        <title>Gripe</title>
+        <icon>gripe.png</icon>
+        <children>meayudas</children>
+        <text>engripado</text>
+    </node>
+    <node>
+        <id>dolor</id>
+        <title>Dolor</title>
+        <icon>dolor.png</icon>
+        <children>dolorcabeza,dolorpanza,dolorgarganta,dolores</children>
+        <text>con dolor de cabeza</text>
+    </node>
+    <node>
+        <id>dolores</id>
+        <title>Otros dolores</title>
+        <icon>dolores.png</icon>
+        <children>dolorespalda,dolormuela,doloroido,dolorpecho</children>
+        <text></text>
+    </node>
+    <node>
+        <id>dolorpecho</id>
+        <title>Dolor de pecho</title>
+        <icon>dolorpecho.png</icon>
+        <children>meayudas</children>
+        <text>con un dolor en el pecho</text>
+    </node>
+    <node>
+        <id>doloroido</id>
+        <title>Dolor de oído</title>
+        <icon>doloroido.png</icon>
+        <children>meayudas</children>
+        <text>con dolor de oído</text>
+    </node>
+    <node>
+        <id>dolormuela</id>
+        <title>Dolor de muela</title>
+        <icon>dolormuela.png</icon>
+        <children>meayudas</children>
+        <text>con dolor de muela</text>
+    </node>
+    <node>
+        <id>dolorespalda</id>
+        <title>Dolor de espalda</title>
+        <icon>dolorespalda.png</icon>
+        <children>meayudas</children>
+        <text>con dolor en la espalda</text>
+    </node>
+    <node>
+        <id>dolorgarganta</id>
+        <title>Dolor de garganta</title>
+        <icon>dolorgarganta.png</icon>
+        <children>meayudas</children>
+        <text>con dolor de garganta</text>
+    </node>
+    <node>
+        <id>dolorpanza</id>
+        <title>Dolor de panza</title>
+        <icon>dolorpanza.png</icon>
+        <children>meayudas</children>
+        <text>con dolor de panza</text>
+    </node>
+    <node>
+        <id>dolorcabeza</id>
+        <title>Dolor de cabeza</title>
+        <icon>dolorcabeza.png</icon>
+        <children>meayudas</children>
+        <text>con dolor de cabeza</text>
+    </node>
+    <node>
+        <id>emocion</id>
+        <title>Emoción</title>
+        <icon>emocion.png</icon>
+        <children>feliz,triste,unpocoloco</children>
+        <text></text>
+    </node>
+    <node>
+        <id>unpocoloco</id>
+        <title>Un poco loco</title>
+        <icon>unpocoloco.png</icon>
+        <children>yvos,muchasgracias</children>
+        <text>un poco loco</text>
+    </node>
+    <node>
+        <id>triste</id>
+        <title>Triste</title>
+        <icon>triste.png</icon>
+        <children>yvos,muchasgracias</children>
+        <text>triste</text>
+    </node>
+    <node>
+        <id>feliz</id>
+        <title>Feliz</title>
+        <icon>feliz.png</icon>
+        <children>yvos,muchasgracias</children>
+        <text>feliz</text>
+    </node>
+    <node>
+        <id>estadoemocional</id>
+        <title>Estado emocional</title>
+        <icon>estadoemocional.png</icon>
+        <children>muybien,mal,masomenos</children>
+        <text></text>
+    </node>
+    <node>
+        <id>masomenos</id>
+        <title>Mas o menos</title>
+        <icon>masomenos.png</icon>
+        <children>yvos,muchasgracias</children>
+        <text>mas o menos</text>
+    </node>
+    <node>
+        <id>mal</id>
+        <title>Mal</title>
+        <icon>mal.png</icon>
+        <children>yvos,muchasgracias</children>
+        <text>mal</text>
+    </node>
+    <node>
+        <id>muybien</id>
+        <title>Muy bien</title>
+        <icon>muybien.png</icon>
+        <children>yvos,muchasgracias</children>
+        <text>muy bien</text>
+    </node>
+    <node>
+        <id>quiero</id>
+        <title>Quiero</title>
+        <icon>quiero.png</icon>
+        <children>comida,aseo,entretenimiento,personas</children>
+        <text>quiero</text>
+    </node>
+    <node>
+        <id>personas</id>
+        <title>Personas</title>
+        <icon>personas.png</icon>
+        <children>mifamilia,amigos,maestro,medico</children>
+        <text></text>
+    </node>
+    <node>
+        <id>medico</id>
+        <title>Médico</title>
+        <icon>medico.png</icon>
+        <children>lopuedesllamar,muchasgracias</children>
+        <text>que me atienda el médico</text>
+    </node>
+    <node>
+        <id>maestro</id>
+        <title>Maestro</title>
+        <icon>maestro.png</icon>
+        <children>lopuedesllamar,muchasgracias</children>
+        <text>al maestro</text>
+    </node>
+    <node>
+        <id>amigos</id>
+        <title>Amigos</title>
+        <icon>amigos.png</icon>
+        <children>lopuedesllamar,muchasgracias</children>
+        <text>a mis amigos</text>
+    </node>
+    <node>
+        <id>mifamilia</id>
+        <title>Mi familia</title>
+        <icon>mifamilia.png</icon>
+        <children>lopuedesllamar,muchasgracias</children>
+        <text>a mi familia</text>
+    </node>
+    <node>
+        <id>lopuedesllamar</id>
+        <title>¿Lo puedes llamar?</title>
+        <icon>lopuedesllamar.png</icon>
+        <children>muchasgracias</children>
+        <text>¿lo puedes llamar?</text>
+    </node>
+    <node>
+        <id>entretenimiento</id>
+        <title>Entretenimiento</title>
+        <icon>entretenimiento.png</icon>
+        <children>leereldiario,vertelevision,jugar</children>
+        <text></text>
+    </node>
+    <node>
+        <id>jugar</id>
+        <title>Jugar</title>
+        <icon>jugar.png</icon>
+        <children>computadora,pelota,masa,juguete</children>
+        <text>jugar</text>
+    </node>
+    <node>
+        <id>juguete</id>
+        <title>Juguete</title>
+        <icon>juguete.png</icon>
+        <children>yvos,muchasgracias</children>
+        <text>con mi juguete</text>
+    </node>
+    <node>
+        <id>masa</id>
+        <title>Masa</title>
+        <icon>masa.png</icon>
+        <children>yvos,muchasgracias</children>
+        <text>con la masa</text>
+    </node>
+    <node>
+        <id>pelota</id>
+        <title>Pelota</title>
+        <icon>pelota.png</icon>
+        <children>yvos,muchasgracias</children>
+        <text>con la pelota</text>
+    </node>
+    <node>
+        <id>computadora</id>
+        <title>Computadora</title>
+        <icon>computadora.png</icon>
+        <children>yvos,muchasgracias</children>
+        <text>en la computadora</text>
+    </node>
+    <node>
+        <id>vertelevision</id>
+        <title>Ver televisión</title>
+        <icon>vertelevision.png</icon>
+        <children>meacompanas,yvos,muchasgracias</children>
+        <text>ver televisión</text>
+    </node>
+    <node>
+        <id>leereldiario</id>
+        <title>Leer el diario</title>
+        <icon>leereldiario.png</icon>
+        <children>meacompanas,yvos,muchasgracias</children>
+        <text>leer el diario</text>
+    </node>
+    <node>
+        <id>aseo</id>
+        <title>Aseo</title>
+        <icon>aseo.png</icon>
+        <children>bano,habitacion</children>
+        <text></text>
+    </node>
+    <node>
+        <id>habitacion</id>
+        <title>Habitación</title>
+        <icon>habitacion.png</icon>
+        <children>cambiarmelaropa,peinarme,mirarmealespejo</children>
+    </node>
+    <node>
+        <id>mirarmealespejo</id>
+        <title>Mirarme al espejo</title>
+        <icon>mirarmealespejo.png</icon>
+        <children>meayudas,muchasgracias</children>
+        <text>mirarme en el espejo</text>
+    </node>
+    <node>
+        <id>peinarme</id>
+        <title>Peinarme</title>
+        <icon>peinarme.png</icon>
+        <children>meayudas,muchasgracias</children>
+        <text>peinarme</text>
+    </node>
+    <node>
+        <id>cambiarmelaropa</id>
+        <title>Cambiarme la ropa</title>
+        <icon>cambiarmelaropa.png</icon>
+        <children>meayudas,muchasgracias</children>
+        <text>cambiarme de ropa</text>
+    </node>
+    <node>
+        <id>bano</id>
+        <title>Baño</title>
+        <icon>bano.png</icon>
+        <children>lavarmelasmanos,cepillarmelosdientes,iralbano,cambiarelpanal</children>
+        <text>ir al baño</text>
+    </node>
+    <node>
+        <id>cambiarelpanal</id>
+        <title>Cambiar el pañal</title>
+        <icon>cambiarelpanal.png</icon>
+        <children>meayudas,muchasgracias</children>
+        <text>a cambiarme el pañal</text>
+    </node>
+    <node>
+        <id>iralbano</id>
+        <title>Ir al baño</title>
+        <icon>iralbano.png</icon>
+        <children>meayudas,muchasgracias</children>
+        <text></text>
+    </node>
+    <node>
+        <id>cepillarmelosdientes</id>
+        <title>Cepillarme los dientes</title>
+        <icon>cepillarmelosdientes.png</icon>
+        <children>meayudas,muchasgracias</children>
+        <text>a cepillarme los dientes</text>
+    </node>
+    <node>
+        <id>lavarmelasmanos</id>
+        <title>Lavarme las manos</title>
+        <icon>lavarmelasmanos.png</icon>
+        <children>meayudas,muchasgracias</children>
+        <text>a lavarme las manos</text>
+    </node>
+    <node>
+        <id>meayudas</id>
+        <title>¿Me ayudas?</title>
+        <icon>meayudas.png</icon>
+        <children>muchasgracias</children>
+        <text>¿me ayudas?</text>
+    </node>
+    <node>
+        <id>comida</id>
+        <title>Comida</title>
+        <icon>comida.png</icon>
+        <children>eldesayuno,golosina,snack,bebida</children>
+        <text></text>
+    </node>
+    <node>
+        <id>bebida</id>
+        <title>Bebida</title>
+        <icon>bebida.png</icon>
+        <children>yvos,meacompanas,muchasgracias</children>
+        <text>tomar algo</text>
+    </node>
+    <node>
+        <id>snack</id>
+        <title>Snack</title>
+        <icon>snack.png</icon>
+        <children>yvos,meacompanas,muchasgracias</children>
+        <text>comer un snack</text>
+    </node>
+    <node>
+        <id>golosina</id>
+        <title>Golosina</title>
+        <icon>golosina.png</icon>
+        <children>yvos,meacompanas,muchasgracias</children>
+        <text>comer una golosina</text>
+    </node>
+    <node>
+        <id>meacompanas</id>
+        <title>¿Me acompañas?</title>
+        <icon>meacompanas.png</icon>
+        <children>muchasgracias</children>
+        <text>¿me acompañas?</text>
+    </node>
+    <node>
+        <id>eldesayuno</id>
+        <title>El desayuno</title>
+        <icon>eldesayuno.png</icon>
+        <children>yvos,muchasgracias</children>
+        <text>tomar el desayuno</text>
+    </node>
+    <node>
+        <id>muchasgracias</id>
+        <title>Muchas gracias</title>
+        <icon>muchasgracias.png</icon>
+        <children>none</children>
+        <text>¡muchas gracias!</text>
+    </node>
+    <node>
+        <id>tengo</id>
+        <title>Tengo</title>
+        <icon>tengo.png</icon>
+        <children>calor,frio,sueno,hambre</children>
+        <text>tengo</text>
+    </node>
+    <node>
+        <id>hambre</id>
+        <title>Hambre</title>
+        <icon>hambre.png</icon>
+        <children>yvos</children>
+        <text>hambre</text>
+    </node>
+    <node>
+        <id>sueno</id>
+        <title>Sueño</title>
+        <icon>sueno.png</icon>
+        <children>yvos</children>
+        <text>sueño</text>
+    </node>
+    <node>
+        <id>frio</id>
+        <title>Frio</title>
+        <icon>frio.png</icon>
+        <children>yvos</children>
+        <text>frío</text>
+    </node>
+    <node>
+        <id>calor</id>
+        <title>Calor</title>
+        <icon>calor.png</icon>
+        <children>yvos</children>
+        <text>calor</text>
+    </node>
+    <node>
+        <id>yvos</id>
+        <title>¿Y vos?</title>
+        <icon>yvos.png</icon>
+        <children>none</children>
+        <text>¿y vos?</text>
+    </node>
+</nodes>

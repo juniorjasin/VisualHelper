@@ -44,7 +44,7 @@ public:
 
         // los LBP funcionan mejor que los haarcascade
         // direccion para crear el Classifier y levantar los xml
-        String facePath = "/storage/emulated/0/data/lbpcascade_frontalface.xml";
+        String facePath = "/storage/emulated/0/visualhelper/lbpcascade_frontalface.xml";
         CascadeClassifier face_cascade;
 
         // levanto y valido que sea correctos
@@ -81,7 +81,7 @@ public:
 
             // los LBP funcionan mejor que los haarcascade
             // direccion para crear el Classifier y levantar los xml
-            String smilePath = "/storage/emulated/0/data/haarcascade_smile.xml";
+            String smilePath = "/storage/emulated/0/visualhelper/haarcascade_smile.xml";
             CascadeClassifier smile_cascade;
 
             // levanto y valido que sea correctos

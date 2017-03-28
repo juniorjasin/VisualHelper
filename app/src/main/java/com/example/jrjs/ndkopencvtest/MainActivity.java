@@ -1,7 +1,6 @@
   package com.example.jrjs.ndkopencvtest;
 
 
-import android.app.Activity;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.support.v7.app.AlertDialog;
@@ -27,10 +26,10 @@ import org.opencv.imgproc.Imgproc;
 import org.xmlpull.v1.XmlPullParserException;
 
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -88,6 +87,15 @@ import static org.opencv.imgproc.Imgproc.resize;
       // cantidad de imagenes cargadas (que se ven). arranca con 4 imagenes (0 al 3)
       public int imageCounter = 3 ;
 
+      // ruta donde voy a almacenar archivos de mi app
+      public static final String LOCAL_STORAGE = "/storage/emulated/0/visualhelper";
+
+      private final String[] xmlNames = {"haarcascade_eye_tree_eyeglasses",
+              "haarcascade_frontalface_alt",
+              "haarcascade_smile",
+              "lbpcascade_frontalface",
+              "ottaa"};
+
       // cargo la libreria (se hace en tiempo de ejecucion)
       static {
           // segun lo que lei: en android 4.2 por un problema tiene problemas para encontrar
@@ -95,7 +103,6 @@ import static org.opencv.imgproc.Imgproc.resize;
           System.loadLibrary("opencv_java3");
           System.loadLibrary("MyOpencvLibs");
       }
-
 
     BaseLoaderCallback mLoaderCallback = new BaseLoaderCallback(this) {
         @Override
@@ -125,48 +132,77 @@ import static org.opencv.imgproc.Imgproc.resize;
          WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
-
         // apuntamos nuestro objeto al que añadimos en activity_main.xml
         javaCameraView = (JavaCameraView) findViewById(R.id.java_camera_view);
         javaCameraView.setVisibility(View.VISIBLE);
         javaCameraView.setCvCameraViewListener(this);
 
         initScrenSize();
-
-
-        // parsea xml, carga nodos y grafo
-        // luego se cargan las primeras 4 imagenes
         createGraph();
+        initFiles();
 
-
-
-
-
-        //*
         // hago la accion para cuando se presione el boton calibrar (ponerlo en un metodo)
         calibrar = (Button) findViewById(R.id.iButtonCalibrar);
         calibrarCara(calibrar);
-
-        //*/
     }
 
-      private void createGraph() {
-          // primero obtener la lista que retorna parse
-          // luego llamar a metodos que crean el grafo (todavia no esta hecho)
-
-          // direccion almacenamiento
-          String localStorage = "/storage/emulated/0/data/ottaa.xml";
-          File file = new File(localStorage);
-
-          // creo InputStream (clase que recibe datos) para levantar archivo xml
-          InputStream in = null;
+      // creo carpeta y archivos si no existen
+      private void initFiles() {
           try {
-              in = new FileInputStream(file);
-          } catch (FileNotFoundException e) {
-              Log.d("InputStream", e.toString());
+              createFolder();
+          } catch (IOException e) {
               e.printStackTrace();
+              Log.d("folder", "No se pudo crear");
+          }
+      }
+
+      // metodo que crea la carpeta visualhelper en LOCAL_STORAGE, si es que no existe
+      // y crea los archivos necesarios dentro si no existia la carpeta.
+      private void createFolder() throws IOException {
+          File folder = new File(LOCAL_STORAGE);
+          //Log.d("success", Environment.getDataDirectory().toString());
+          boolean success = true;
+          if (!folder.exists()) {
+              success = folder.mkdir(); // si ya existe la carpeta, retorna falso.
           }
 
+          if (success) {
+              // copia todas las imagenes en la carpeta /virtualhelper
+              createAllFiles(xmlNames, LOCAL_STORAGE, ".xml");
+          }
+      }
+
+      // crea todos las imagenes
+      private void createAllFiles(String[] fileNames, String path ,String extension) throws IOException {
+
+          InputStream initialStream = null;
+          int i = 0;
+          for(String fileName : fileNames){
+              int idResource = getResources().getIdentifier(fileName, "raw", getPackageName());
+              Log.d("22 id", String.valueOf(idResource));
+              initialStream = this.getResources().openRawResource(idResource);
+              createSingleFile(initialStream, path, fileName, extension);
+              i++;
+          }
+      }
+
+      // metodo que crea un archivo con la ubicacion, nombre y el contenido que se pasan por parametro
+      private void createSingleFile(InputStream initialStream, String pathDestination, String fileName, String extension) throws IOException {
+          // copia a buffer lo que tiene el initialStream
+          byte[] buffer = new byte[initialStream.available()];
+          initialStream.read(buffer);
+
+          // crea un nuevo archivo en la direccion y con lo que contiene initialStream
+          File targetFile = new File(pathDestination + "/" + fileName + extension);
+          OutputStream outStream = new FileOutputStream(targetFile);
+          outStream.write(buffer);
+      }
+
+      // parsea xml, carga nodos y grafo
+      // luego se cargan las primeras 4 imagenes
+      private void createGraph() {
+          // obtengo el grafo de los recursos
+          InputStream in = this.getResources().openRawResource(R.raw.ottaa);
           // xmlreader
           try {
               gr.setGraph(xmlReader.parse(in));
@@ -183,12 +219,10 @@ import static org.opencv.imgproc.Imgproc.resize;
           // carga el primer nodo y retorna los hijos (nombre de las imagenes)
           // y estas se cargan en la vista
           // luego, segun el nodo que se este viendo, hago lo mismo.
-
           List<String> childs = gr.getFirstChilds();
+
           // ahora inicializo las imagenes segun los hijos del nodo inicial (que no tiene nada)
-
           initImages(childs);
-
       }
 
       // inicializa srcHeight y srcWidth para calcular el tamaño de las imagnes y camara
@@ -300,7 +334,6 @@ import static org.opencv.imgproc.Imgproc.resize;
           }
       }
 
-
       // inicializo los Mat que cree arriba con los parametros que se obtiene de la camara
       // pueden variara si el <<widget>> de la camara (en el xml) es mas grande o mas chico
       @Override
@@ -315,9 +348,6 @@ import static org.opencv.imgproc.Imgproc.resize;
       public void onCameraViewStopped() {
           mRgba.release();
       }
-
-
-      public boolean aux = true;
 
       // aca se recibe cada uno de los frames que se va a procesar
       @Override
@@ -431,7 +461,6 @@ import static org.opencv.imgproc.Imgproc.resize;
           });
       }
 
-
       // switch para elegir opcion en index (solo para no tener tanto codigo en onCameraFrame)
       public void resaltarOpcion(int index){
 
@@ -519,5 +548,4 @@ import static org.opencv.imgproc.Imgproc.resize;
           }
           return calibrated;
       }
-
   }
