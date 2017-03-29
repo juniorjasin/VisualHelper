@@ -44,35 +44,43 @@
         android:id="@+id/img2"
         android:layout_width="600px"
         android:layout_height="600px"
-        android:layout_marginLeft="151dp"
-        android:layout_marginStart="151dp"
-        android:layout_alignParentTop="true"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentStart="true"
         android:clickable="true"
-        android:focusableInTouchMode="true"/>
+        android:focusableInTouchMode="true"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/img1"
+        android:layout_toEndOf="@+id/img1" />
 
     <ImageView
 
         android:id="@+id/img3"
         android:layout_width="600px"
         android:layout_height="600px"
-        android:layout_alignTop="@+id/img2"
-        android:layout_toRightOf="@+id/img2"
-        android:layout_toEndOf="@+id/img2"
         android:clickable="true"
-        android:focusableInTouchMode="true"/>
+        android:focusableInTouchMode="true"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/img2"
+        android:layout_toEndOf="@+id/img2" />
 
     <ImageView
 
         android:id="@+id/img4"
         android:layout_width="600px"
         android:layout_height="600px"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/img3"
-        android:layout_toEndOf="@+id/img3"
         android:clickable="true"
-        android:focusableInTouchMode="true"/>
+        android:focusableInTouchMode="true"
+        android:layout_alignParentTop="true"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
+
+    <TextView
+        android:id="@+id/frase"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_above="@+id/iButtonCalibrar"
+        android:layout_margin="30dp"
+        android:layout_toRightOf="@+id/java_camera_view"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentEnd="true" />
 
 
 </RelativeLayout>

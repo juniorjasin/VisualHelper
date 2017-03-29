@@ -31,7 +31,7 @@ JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_smi
 }
 
 
-
+// retorna el index (numero de imagen donde apunta el rostro)
 JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_getIndex
         (JNIEnv *, jclass, jlong addrRgba, jint xFaceCenter, jint size){
 
@@ -47,8 +47,6 @@ JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_get
         index = size - ( dx / relAnchoCara_Opciones) - 1;
 
 
-
-
         char buffer[30];
         sprintf(buffer,"%d", index);
         putText(frame, buffer, cvPoint(xFaceCenter,xFaceCenter),
@@ -58,11 +56,18 @@ JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_get
 
     } else{
 
-
         putText(frame, "no hay rostro", cvPoint(xFaceCenter,xFaceCenter),
                 FONT_HERSHEY_COMPLEX_SMALL, 5, cvScalar(200,200,250), 1, CV_AA);
         return (jint) -99;
     }
+}
+
+JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_eyeDetection
+        (JNIEnv *, jclass, jlong addrRgba){
+
+    Mat &frame = *(Mat*)addrRgba;
+
+    MatProcessor m;
 
 }
 

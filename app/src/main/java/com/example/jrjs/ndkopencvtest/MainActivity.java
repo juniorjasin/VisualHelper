@@ -3,6 +3,7 @@
 
 import android.content.DialogInterface;
 import android.graphics.Color;
+import android.os.Handler;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -12,6 +13,7 @@ import android.view.View;
 import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -63,8 +65,12 @@ import static org.opencv.imgproc.Imgproc.resize;
       public int index = -1;
 
       // medidas de la pantalla
-      public int srcHeight;
-      public int srcWidth;
+      private int srcHeight;
+      private int srcWidth;
+
+      // medidas de las imagenes
+      private int imgsWidth = 0;
+      private int imgsHeigth = 0;
 
       // objetos manejadores de la ventana (mas adelante podria ser un vector o una lista)
       public ImageView im1;
@@ -78,17 +84,29 @@ import static org.opencv.imgproc.Imgproc.resize;
       // este numero consecutivo de sonrisas
       public int smileCounter = 0;
 
+      // var para verificar si se apuntaba al mismo index en la vuelta anterior
+      private int lastIndex = 0;
+
+      // contador para que luego de n veces seguidas apuntando al mismo index
+      // se pueda seleccionar la opcion
+      int indexCounter = 0;
+
       // clase para leer ottaa.xml
       XMLReader xmlReader = new XMLReader();
 
       // List de Nodos que conforman el grafo
-      Graph gr = new Graph();
+      Graph gr;
 
       // cantidad de imagenes cargadas (que se ven). arranca con 4 imagenes (0 al 3)
       public int imageCounter = 3 ;
 
       // ruta donde voy a almacenar archivos de mi app
       public static final String LOCAL_STORAGE = "/storage/emulated/0/visualhelper";
+
+      // donde se vera la tvFrase de cada imagen
+      private TextView tvFrase;
+
+      private String frase = "";
 
       private final String[] xmlNames = {"haarcascade_eye_tree_eyeglasses",
               "haarcascade_frontalface_alt",
@@ -132,19 +150,32 @@ import static org.opencv.imgproc.Imgproc.resize;
          WindowManager.LayoutParams.FLAG_FULLSCREEN);
         setContentView(R.layout.activity_main);
 
-        // apuntamos nuestro objeto al que añadimos en activity_main.xml
-        javaCameraView = (JavaCameraView) findViewById(R.id.java_camera_view);
-        javaCameraView.setVisibility(View.VISIBLE);
-        javaCameraView.setCvCameraViewListener(this);
-
         initScrenSize();
+        initCamera();
         createGraph();
         initFiles();
 
+        tvFrase = (TextView) findViewById(R.id.frase);
+        tvFrase.setTextSize(25);
+
         // hago la accion para cuando se presione el boton calibrar (ponerlo en un metodo)
         calibrar = (Button) findViewById(R.id.iButtonCalibrar);
+        calibrar.requestLayout();
+
         calibrarCara(calibrar);
     }
+
+    // apuntamos, iniciamos camara y le damos medidas segun tamaño de la pantalla
+      private void initCamera() {
+          // apuntamos nuestro objeto al que añadimos en activity_main.xml
+          javaCameraView = (JavaCameraView) findViewById(R.id.java_camera_view);
+          javaCameraView.setVisibility(View.VISIBLE);
+          javaCameraView.setCvCameraViewListener(this);
+          javaCameraView.requestLayout();
+
+          javaCameraView.getLayoutParams().height = srcHeight/2;
+          javaCameraView.getLayoutParams().width = srcWidth/2;
+      }
 
       // creo carpeta y archivos si no existen
       private void initFiles() {
@@ -201,6 +232,9 @@ import static org.opencv.imgproc.Imgproc.resize;
       // parsea xml, carga nodos y grafo
       // luego se cargan las primeras 4 imagenes
       private void createGraph() {
+
+          gr = new Graph();
+
           // obtengo el grafo de los recursos
           InputStream in = this.getResources().openRawResource(R.raw.ottaa);
           // xmlreader
@@ -237,6 +271,43 @@ import static org.opencv.imgproc.Imgproc.resize;
 
       // apunto imagenes, cargo source inicial y las agrego a la lista
       public void initImages(List<String> images){
+
+          // apunto imagenes y las cargo en List
+          List<ImageView> ivList = pointImgToWidgets();
+
+          // lo seteo aca tambien porque cuando reinicio la app queda guardado el ultimo numero
+          // y no puedo aceptar las opciones
+          imageCounter = imList.size();
+
+          imgsWidth = srcWidth/imageCounter;
+          imgsHeigth = imgsWidth;
+
+          setImagesSizes(ivList, imgsWidth, imgsHeigth);
+          setImagesNamesAsResource(images);
+      }
+
+      // seteo las imagenes con los nombres que vienen en images
+      private void setImagesNamesAsResource(List<String> images) {
+          int i = 0;
+          for(String imgName : images){
+              int idResource = getResources().getIdentifier(imgName, "drawable", getPackageName());
+              imList.get(i).setImageResource(idResource);
+              i++;
+          }
+      }
+
+      // seteo los tamaños de las imagenes en la Lista, segun los tamaños de la pantalla
+      private void setImagesSizes(List<ImageView> l, int w, int h) {
+
+          for(ImageView i : l){
+              i.requestLayout();
+              i.getLayoutParams().width = w;
+              i.getLayoutParams().height = h;
+          }
+      }
+
+      // apunto mis atibutos a las ImageView
+      private List<ImageView> pointImgToWidgets() {
           // apunto las imagenes a los widgets
           im1 = (ImageView) findViewById(R.id.img1);
           im2 = (ImageView) findViewById(R.id.img2);
@@ -249,20 +320,7 @@ import static org.opencv.imgproc.Imgproc.resize;
           imList.add(im3);
           imList.add(im4);
 
-          // seteo en tiempo de ejecucion las imagenes
-          // uso Background y no setSrc porque lei que con src
-          // se superpone la imagen encima de la otra, pero no se como comprobar si es cierto
-          //int resourceId = Activity.getResources().getIdentifier(images.get(0), "drawable", getPackageName());
-
-          //int res = getResources().getIdentifier("frio", "drawable", getPackageName());
-          //im1.setImageResource(res);
-
-          int i = 0;
-          for(String imgName : images){
-              int idResource = getResources().getIdentifier(imgName, "drawable", getPackageName());
-              imList.get(i).setImageResource(idResource);
-              i++;
-          }
+          return imList;
       }
 
       // funcionamiento de buton para calibrar la cara
@@ -292,19 +350,33 @@ import static org.opencv.imgproc.Imgproc.resize;
       }
 
       // muestro AlertDialog con mensaje
-      public void dialogoAviso(String title, String message){
+      public void dialogoAviso(final String title, final String message){
 
-          // Muestro un cartelito que diga que esta calibrado
-          new AlertDialog.Builder(MainActivity.this)
-                  .setTitle(title)
-                  .setMessage(message)
-                  .setPositiveButton(android.R.string.yes, new DialogInterface.OnClickListener() {
-                      public void onClick(DialogInterface dialog, int which) {
-                          // continue with delete
-                      }
-                  })
-                  .setIcon(android.R.drawable.ic_dialog_alert)
-                  .show();
+          runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                  // Muestro un cartelito que diga que esta calibrado
+                  new AlertDialog.Builder(MainActivity.this)
+                          .setTitle(title)
+                          .setMessage(message)
+                          .setPositiveButton("restart", new DialogInterface.OnClickListener() {
+                              public void onClick(DialogInterface dialog, int which) {
+                                  // usuario acepto
+                                  restartApp();
+                              }
+                          })
+
+                          .setNegativeButton("cancel", new DialogInterface.OnClickListener() {
+                              public void onClick(DialogInterface dialog, int id) {
+                                  // User cancelled the dialog
+
+                              }
+                          })
+                          .setIcon(android.R.drawable.ic_dialog_alert)
+                          .show();
+              }
+          });
+
       }
 
       @Override
@@ -355,10 +427,18 @@ import static org.opencv.imgproc.Imgproc.resize;
           mRgba = inputFrame.rgba();
           Core.flip(mRgba,mRgba,1); // invierto los pixeles asi nos vemos como si fuera una espejo
 
+          Log.d("scrWidth", String.valueOf(srcWidth)); // 2560
+          Log.d("scrHeight", String.valueOf(srcHeight)); // 1440
+
+          Log.d("filas", String.valueOf(mRgba.rows() * 2)); // 720 // (1.1) 792 // (1.2) 864
+          Log.d("columnas", String.valueOf(mRgba.cols() * 2)); // 960 // (1.1) 1056 // (1.2) 1152
+          // (1.5) 1080 // .4 1007 //
+          // (1.5) 1440 // .4 1344 //
+
           // agrando la imagen para analizarla (no seria necesario agrandarlo al tamaño de la pantalla
           // podria hacerla un poco mas chica si ncesito mejor performance)
           Mat rz = new Mat();
-          resize(mRgba, rz, new Size(srcWidth, srcHeight));
+          resize(mRgba, rz, new Size(mRgba.cols()*2, mRgba.rows()*2));
 
           if (!isCalibrated()){
               // hago esto dentro y no fuera porque consumia recursos y crasheaba
@@ -373,68 +453,108 @@ import static org.opencv.imgproc.Imgproc.resize;
 
           // si se obtuvo un indice valido que se resalte la opcion
           if(index != -1){
+
+
               resaltarOpcion(index);
               int sd = OpencvNativeClass.smileDetection(rz.getNativeObjAddr());
+
               //Log.d("smileDet", Integer.toString(sd));
-              Log.d("smileCounter", String.valueOf(smileCounter));
-              Log.d("Sonrisa", String.valueOf(sd));
+              //Log.d("smileCounter", String.valueOf(smileCounter));
+              //Log.d("Sonrisa", String.valueOf(sd));
 
               if( sd != -1){
 
-
                   smileCounter++;
-                  Log.d("smileCounter", String.valueOf(smileCounter));
-                  Log.d("imageCounter", String.valueOf(imageCounter));
-                  Log.d("index outside", String.valueOf(index));
-                  //Log.d("index", String.valueOf(index));
-                  if(smileCounter >= 10 && index >= 0 && index < imageCounter) {
+
+                  if(lastIndex == index) indexCounter++;
+                  else indexCounter = 0;
+
+                  /*
+                  Log.d("index a", String.valueOf(index));
+                  Log.d("indexCounter a", String.valueOf(indexCounter));
+                  Log.d("ind smileCounter a", String.valueOf(smileCounter));
+                  Log.d("ind imageCounter a", String.valueOf(imageCounter));
+                  */
+
+                  // conmigo 4,7 funcionan mas o menos bien
+                  if(smileCounter > 4 && index >= 0 && index < imageCounter && indexCounter > 4) {
                       // cuando esta de frente detecta sonrisas por mas que no sonria con 4
                       Imgproc.cvtColor(mRgba,mRgba,COLOR_RGB2GRAY);
-                      //Log.d("smileDet Gray", Integer.toString(sd));
-                      Log.d("index inside", String.valueOf(index));
+                      /*
+                      Log.d("smileDet Gray", Integer.toString(sd));
+                      Log.d("index", String.valueOf(index));
+                      Log.d("indexCounter", String.valueOf(indexCounter));
+                      Log.d("ind smileCounter", String.valueOf(smileCounter));
+                      Log.d("ind imageCounter", String.valueOf(imageCounter));
+                      */
 
                       // reinicio el contador para q en la proxima vuelta
-                      // no siga detectando sonrisas
+                      // no siga detectando sonrisas/indexapuntados
                       smileCounter = 0;
+                      indexCounter = 0;
 
-                      //Log.d("smileCounter", String.valueOf(smileCounter));
-
-                      //TODO: podria agregar que hayan dos o mas index iguales para seleccionar la
-                      // imagen, para no selccionar una imagen no deseada
-
-                      //*
-                      //Log.d("index", String.valueOf(index));
                       String imgName = gr.getCurrentNodo().children.get(index);
-                      //Log.d("size children", String.valueOf(gr.getCurrentNodo().children.size()));
-                      //Log.d("hijo al que miro", imgName);
-                      Nodo n = gr.getNodo(imgName); // esto retorna null
+                      Nodo n = gr.getNodo(imgName);
 
                       if(n != null){
                         //  Log.d("NODO", "DISTINTO DE NULL");
                           gr.setCurrentNodo(n);
+                          updateFrase(n);
                           List<String> ch = gr.getCurrentNodo().children;
                           updateImages(ch);
-                      }else{
-                          //Log.d("Nodo", "NULL");
+
+                          //Log.d("children", n.children.get(0));
+                          if(n.children.get(0).equals("none")){
+
+                              try {
+                                  Thread.sleep(3000);
+                              } catch (InterruptedException e) {
+                                  e.printStackTrace();
+                              }
+
+                              dialogoAviso("final", "presione restart para iniciar nuevamente");
+                          }
                       }
-
-                      //gr.setCurrentNodo(n);
-                      //List<String> ch = gr.getCurrentNodo().children;
-                      //updateImages(ch);
-                      //*/
-
                   }
+
+                  lastIndex = index;
+
               } else {
                   smileCounter = 0;
               }
           }
 
-
-
           // siempre tengo que hacerle relese a los Mat porque sino se me acumulan en la memoria
           rz.release();
           // retorno null si no quiero que se vea la imagen pero que se tome cada frame de la camara
           return mRgba;
+      }
+
+      private void restartApp() {
+          runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                  frase = "";
+                  tvFrase.setText("");
+                  imList.clear();
+                  imageCounter = 0;
+                  createGraph();
+              }
+          });
+
+      }
+
+      // le añade a la frase en el textView la cadena del nodo actual
+      private void updateFrase(final Nodo n) {
+          runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                  if(n.text != null){
+                      frase += n.text + " ";
+                      tvFrase.setText(frase);
+                  }
+              }
+          });
       }
 
       // actualizo las imagenes que se muestran
@@ -486,6 +606,12 @@ import static org.opencv.imgproc.Imgproc.resize;
           runOnUiThread(new Runnable() {
               @Override
               public void run() {
+
+                  if (startCalibration){
+                      calibrar.setText("calibrar");
+                      startCalibration = false;
+                  }
+
                   resaltarOpcionApuntada(idx);
                   oscurecerOtrasOpciones(idx);
               }
@@ -548,4 +674,5 @@ import static org.opencv.imgproc.Imgproc.resize;
           }
           return calibrated;
       }
+
   }

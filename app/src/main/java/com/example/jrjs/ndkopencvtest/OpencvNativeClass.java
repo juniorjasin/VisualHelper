@@ -11,4 +11,5 @@ public class OpencvNativeClass {
 
     public native static int smileDetection(long addrRgba);
     public native static int getIndex(long addrRgba, int xFaceCenter ,int size);
+    public native static int eyeDetection(long addrRgba);
 }

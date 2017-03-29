@@ -54,7 +54,6 @@ public:
         };
 
         // no se porque lo convierte a gris y luego lo detecta
-
         Mat frame_gray;
         cvtColor(frame, frame_gray, CV_BGR2GRAY); // porque lo cambia a gris ??
         // calcula el histograma y otras cosas para aumentar el contraste
@@ -67,8 +66,8 @@ public:
 
         // verifico que haya una cara
         if (faces.size() > 0) {
-            currentFace = faces.at(0);
-            xFaceCenter = faces.at(0).x + faces.at(0).width / 2;
+            this->currentFace = faces.at(0);
+            this->xFaceCenter = faces.at(0).x + faces.at(0).width / 2;
             return true;
         }
         return false;
@@ -107,6 +106,40 @@ public:
             // si no hay cara no se va a encontrar sonrisa
             return false;
         }
+    }
+
+
+    /////*****************************************
+    /////              TERMINAR
+    /////*****************************************
+    bool detectAnyEye(Mat &frame){
+        if(this->detectFace(frame)){
+
+            // los LBP funcionan mejor que los haarcascade
+            // direccion para crear el Classifier y levantar los xml
+            String facePath = "/storage/emulated/0/visualhelper/lbpcascade_frontalface.xml";
+            CascadeClassifier face_cascade;
+
+            // levanto y valido que sea correctos
+            if (!face_cascade.load(facePath)) {
+                printf("--(!)Error loading\n");
+                return false;
+            };
+
+            Mat fg = this->frame_gray;
+            std::vector<Rect> eyes;
+
+            //-- In each face, detect eyes
+            eyes_cascade.detectMultiScale( fg, eyes, 1.1, 2, 0 |CV_HAAR_SCALE_IMAGE, Size(150, 150) );
+
+            if (eyes.size() > 0) {
+                return true;
+            }else {
+                return  false;
+            }
+        }
+
+        return false;
     }
 
 

@@ -26,6 +26,10 @@ public class Graph {
         return ch;
     }
 
+    public void restarGraph(){
+        //this.currentNode = (Nodo) this.graph.get(0);
+    }
+
     // recorre la lista graph y busca si algun noodo tiene un id igual al que le pasan por parametro
     public Nodo getNodo(String id){
         Nodo n;

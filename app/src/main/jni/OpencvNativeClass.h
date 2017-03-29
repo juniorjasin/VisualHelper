@@ -15,7 +15,7 @@ extern "C" {
  * Signature: (J)I
  */
 JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_smileDetection
-  (JNIEnv *, jclass, jlong);
+        (JNIEnv *, jclass, jlong);
 
 /*
  * Class:     com_example_jrjs_ndkopencvtest_OpencvNativeClass
@@ -23,7 +23,15 @@ JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_smi
  * Signature: (JII)I
  */
 JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_getIndex
-  (JNIEnv *, jclass, jlong, jint, jint);
+        (JNIEnv *, jclass, jlong, jint, jint);
+
+/*
+ * Class:     com_example_jrjs_ndkopencvtest_OpencvNativeClass
+ * Method:    eyeDetection
+ * Signature: (J)I
+ */
+JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_eyeDetection
+        (JNIEnv *, jclass, jlong);
 
 #ifdef __cplusplus
 }
