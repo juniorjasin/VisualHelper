@@ -62,13 +62,21 @@ JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_get
     }
 }
 
+
+// retorna el punto en x del centro de la cara si encontro algun ojo
 JNIEXPORT jint JNICALL Java_com_example_jrjs_ndkopencvtest_OpencvNativeClass_eyeDetection
         (JNIEnv *, jclass, jlong addrRgba){
 
     Mat &frame = *(Mat*)addrRgba;
-
     MatProcessor m;
 
+    if(m.detectAnyEye(frame)){
+        // si detecto algun ojo retorna -1
+        return (jint) -1;
+    }else {
+        // si NO detecto algun ojo retorna el centro de la cara en X
+        return (jint) m.getXFaceCenter();
+    }
 }
 
 

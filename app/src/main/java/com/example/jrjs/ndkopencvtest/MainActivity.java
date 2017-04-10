@@ -3,7 +3,8 @@
 
 import android.content.DialogInterface;
 import android.graphics.Color;
-import android.os.Handler;
+import android.os.Build;
+import android.speech.tts.TextToSpeech;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -14,6 +15,7 @@ import android.view.WindowManager;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import org.opencv.android.BaseLoaderCallback;
 import org.opencv.android.CameraBridgeViewBase;
@@ -34,11 +36,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import static org.opencv.imgproc.Imgproc.COLOR_RGB2GRAY;
 import static org.opencv.imgproc.Imgproc.resize;
 
-  public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2{
+  public class MainActivity extends AppCompatActivity implements CameraBridgeViewBase.CvCameraViewListener2, TextToSpeech.OnInitListener {
 
       // string de control
     public static String TAG = "MainActivity";
@@ -80,9 +83,9 @@ import static org.opencv.imgproc.Imgproc.resize;
 
       public List<ImageView> imList = new ArrayList<ImageView>();
 
-      // contador de sonrisas, para seleccionar una opcion luego de que detecte
-      // este numero consecutivo de sonrisas
-      public int smileCounter = 0;
+      // contador de ojos, para seleccionar una opcion luego de que detecte
+      // este numero consecutivo de ojos
+      public int eyeCounter = 0;
 
       // var para verificar si se apuntaba al mismo index en la vuelta anterior
       private int lastIndex = 0;
@@ -107,6 +110,15 @@ import static org.opencv.imgproc.Imgproc.resize;
       private TextView tvFrase;
 
       private String frase = "";
+
+      // TextToSpeech, objeto sintetizador de voz
+      TextToSpeech tts;
+
+      // indica cuando finaliza una vuelta de ciclo de pictogramas
+      private boolean finCiclo = false;
+
+      // contador de sonrisas para reiniciar la app
+      int smileCounter = 0;
 
       private final String[] xmlNames = {"haarcascade_eye_tree_eyeglasses",
               "haarcascade_frontalface_alt",
@@ -163,6 +175,8 @@ import static org.opencv.imgproc.Imgproc.resize;
         calibrar.requestLayout();
 
         calibrarCara(calibrar);
+
+         tts = new TextToSpeech(this, this);
     }
 
     // apuntamos, iniciamos camara y le damos medidas segun tamaño de la pantalla
@@ -438,7 +452,8 @@ import static org.opencv.imgproc.Imgproc.resize;
           // agrando la imagen para analizarla (no seria necesario agrandarlo al tamaño de la pantalla
           // podria hacerla un poco mas chica si ncesito mejor performance)
           Mat rz = new Mat();
-          resize(mRgba, rz, new Size(mRgba.cols()*2, mRgba.rows()*2));
+          resize(mRgba, rz, new Size(mRgba.cols()*1.5, mRgba.rows()*1.5));
+
 
           if (!isCalibrated()){
               // hago esto dentro y no fuera porque consumia recursos y crasheaba
@@ -454,17 +469,20 @@ import static org.opencv.imgproc.Imgproc.resize;
           // si se obtuvo un indice valido que se resalte la opcion
           if(index != -1){
 
-
               resaltarOpcion(index);
-              int sd = OpencvNativeClass.smileDetection(rz.getNativeObjAddr());
+              //int sd = OpencvNativeClass.smileDetection(rz.getNativeObjAddr());
+              int sd = OpencvNativeClass.eyeDetection(rz.getNativeObjAddr());
 
               //Log.d("smileDet", Integer.toString(sd));
-              //Log.d("smileCounter", String.valueOf(smileCounter));
+              //Log.d("eyeCounter", String.valueOf(eyeCounter));
               //Log.d("Sonrisa", String.valueOf(sd));
 
               if( sd != -1){
 
-                  smileCounter++;
+                  Log.d("EYE", "ojo NO encontrado");
+
+
+                  eyeCounter++;
 
                   if(lastIndex == index) indexCounter++;
                   else indexCounter = 0;
@@ -472,45 +490,52 @@ import static org.opencv.imgproc.Imgproc.resize;
                   /*
                   Log.d("index a", String.valueOf(index));
                   Log.d("indexCounter a", String.valueOf(indexCounter));
-                  Log.d("ind smileCounter a", String.valueOf(smileCounter));
+                  Log.d("ind eyeCounter a", String.valueOf(eyeCounter));
                   Log.d("ind imageCounter a", String.valueOf(imageCounter));
                   */
 
+                  Log.d("ind eyeCounter a", String.valueOf(eyeCounter));
+
                   // conmigo 4,7 funcionan mas o menos bien
-                  if(smileCounter > 4 && index >= 0 && index < imageCounter && indexCounter > 4) {
+                  if(index >= 0 && index < imageCounter && eyeCounter > 1 && indexCounter > 1) {
                       // cuando esta de frente detecta sonrisas por mas que no sonria con 4
                       Imgproc.cvtColor(mRgba,mRgba,COLOR_RGB2GRAY);
                       /*
                       Log.d("smileDet Gray", Integer.toString(sd));
                       Log.d("index", String.valueOf(index));
                       Log.d("indexCounter", String.valueOf(indexCounter));
-                      Log.d("ind smileCounter", String.valueOf(smileCounter));
+                      Log.d("ind eyeCounter", String.valueOf(eyeCounter));
                       Log.d("ind imageCounter", String.valueOf(imageCounter));
                       */
 
                       // reinicio el contador para q en la proxima vuelta
                       // no siga detectando sonrisas/indexapuntados
-                      smileCounter = 0;
                       indexCounter = 0;
+                      eyeCounter = 0;
 
                       String imgName = gr.getCurrentNodo().children.get(index);
                       Nodo n = gr.getNodo(imgName);
 
                       if(n != null){
                         //  Log.d("NODO", "DISTINTO DE NULL");
+
+                          String text = n.text;
+                          if(!(text == null)) {
+                              frase += n.text + " ";
+                              updateFrase(frase);
+                          }
                           gr.setCurrentNodo(n);
-                          updateFrase(n);
                           List<String> ch = gr.getCurrentNodo().children;
                           updateImages(ch);
 
                           //Log.d("children", n.children.get(0));
+                          // llego al final, entonces reproduzco la frase
                           if(n.children.get(0).equals("none")){
 
-                              try {
-                                  Thread.sleep(3000);
-                              } catch (InterruptedException e) {
-                                  e.printStackTrace();
-                              }
+                              reproducirFrase(frase, "es");
+
+                              String toastText = "sonria unos segundos para reiniciar...";
+                              sendToastMessage(toastText, Toast.LENGTH_LONG);
 
                               dialogoAviso("final", "presione restart para iniciar nuevamente");
                           }
@@ -520,7 +545,8 @@ import static org.opencv.imgproc.Imgproc.resize;
                   lastIndex = index;
 
               } else {
-                  smileCounter = 0;
+                  Log.d("EYE", "ojo encontrado");
+                  eyeCounter = 0;
               }
           }
 
@@ -528,6 +554,36 @@ import static org.opencv.imgproc.Imgproc.resize;
           rz.release();
           // retorno null si no quiero que se vea la imagen pero que se tome cada frame de la camara
           return mRgba;
+      }
+
+
+      private void sendToastMessage(final String toastText, int lengthLong) {
+          runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+                  Toast toast = Toast.makeText(getApplicationContext(), toastText, Toast.LENGTH_LONG);
+                  toast.show();
+              }
+          });
+      }
+
+
+      // reproduce la frase con el codigo de idioma especificado
+      private Boolean reproducirFrase(String frase, String codigoIdioma) {
+          Locale loc = new Locale(codigoIdioma, "", "");
+          if(tts.isLanguageAvailable(loc) >= TextToSpeech.LANG_AVAILABLE){
+              tts.setLanguage(loc);
+          }
+
+          String utteranceId= this.hashCode() + "";
+          if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
+              tts.speak(frase, TextToSpeech.QUEUE_FLUSH, null, utteranceId);
+              Log.d("frase", "if (nueva version)");
+          }else{
+              Log.d("frase", "else (vieja version)");
+              tts.speak(frase, TextToSpeech.QUEUE_FLUSH, null);
+          }
+          return true;
       }
 
       private void restartApp() {
@@ -545,14 +601,14 @@ import static org.opencv.imgproc.Imgproc.resize;
       }
 
       // le añade a la frase en el textView la cadena del nodo actual
-      private void updateFrase(final Nodo n) {
+      private void updateFrase(final String s) {
+          //if(!s.isEmpty() && s.equals(null) && s.equals("") && s == "null" && s.length() == 0)
+          //    return;
+
           runOnUiThread(new Runnable() {
               @Override
               public void run() {
-                  if(n.text != null){
-                      frase += n.text + " ";
-                      tvFrase.setText(frase);
-                  }
+                  tvFrase.setText(s);
               }
           });
       }
@@ -675,4 +731,9 @@ import static org.opencv.imgproc.Imgproc.resize;
           return calibrated;
       }
 
+      @Override
+      public void onInit(int status) {
+
+
+      }
   }
