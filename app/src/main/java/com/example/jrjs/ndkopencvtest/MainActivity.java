@@ -4,7 +4,10 @@
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Build;
+import android.os.CountDownTimer;
+import android.os.Looper;
 import android.speech.tts.TextToSpeech;
+import android.speech.tts.UtteranceProgressListener;
 import android.support.v7.app.AlertDialog;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
@@ -37,6 +40,7 @@ import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Locale;
+import java.util.logging.Handler;
 
 import static org.opencv.imgproc.Imgproc.COLOR_RGB2GRAY;
 import static org.opencv.imgproc.Imgproc.resize;
@@ -119,6 +123,9 @@ import static org.opencv.imgproc.Imgproc.resize;
 
       // contador de sonrisas para reiniciar la app
       int smileCounter = 0;
+
+      // boolean para saber cuando se termina de reproducir la frase
+      private boolean ttsFinished = false;
 
       private final String[] xmlNames = {"haarcascade_eye_tree_eyeglasses",
               "haarcascade_frontalface_alt",
@@ -454,7 +461,6 @@ import static org.opencv.imgproc.Imgproc.resize;
           Mat rz = new Mat();
           resize(mRgba, rz, new Size(mRgba.cols()*1.5, mRgba.rows()*1.5));
 
-
           if (!isCalibrated()){
               // hago esto dentro y no fuera porque consumia recursos y crasheaba
               calibrar(rz);
@@ -534,20 +540,23 @@ import static org.opencv.imgproc.Imgproc.resize;
 
                               reproducirFrase(frase, "es");
 
-                              String toastText = "sonria unos segundos para reiniciar...";
-                              sendToastMessage(toastText, Toast.LENGTH_LONG);
-
-                              dialogoAviso("final", "presione restart para iniciar nuevamente");
+                              //dialogoAviso("final", "presione restart para iniciar nuevamente");
                           }
                       }
                   }
-
                   lastIndex = index;
-
               } else {
                   Log.d("EYE", "ojo encontrado");
                   eyeCounter = 0;
               }
+          }
+
+          // si termino de reproducir el texto, que recien ahi pueda reiniciar la app
+          if(ttsFinished == true){
+              String toastText = "espere unos segundos para reiniciar...";
+              sendToastMessage(toastText, Toast.LENGTH_LONG);
+              setTimerToRestart(5000, 2000);
+              ttsFinished = false;
           }
 
           // siempre tengo que hacerle relese a los Mat porque sino se me acumulan en la memoria
@@ -556,7 +565,29 @@ import static org.opencv.imgproc.Imgproc.resize;
           return mRgba;
       }
 
+      // seteo un contador de tiempo tiempoEspera para que se reinicie la app
+      private void setTimerToRestart(final int tiempoEspera, final int tiempoIntervalo) {
 
+          runOnUiThread(new Runnable() {
+              @Override
+              public void run() {
+
+                  new CountDownTimer(tiempoEspera, tiempoIntervalo) {
+                      public void onTick(long millisUntilFinished) {
+                          // los LENGTH_SHORT tardan mas de un segundo y cuando muestra los ultimos ya termino
+                          //sendToastMessage("restart en "+ millisUntilFinished / 1000,Toast.LENGTH_SHORT);
+                      }
+
+                      public void onFinish() {
+                          //mTextField.setText("done!");
+                          restartApp();
+                      }
+                  }.start();
+              }
+          });
+      }
+
+      // muestra toast con el string por parametro y con el tiempo por parametro
       private void sendToastMessage(final String toastText, int lengthLong) {
           runOnUiThread(new Runnable() {
               @Override
@@ -567,9 +598,11 @@ import static org.opencv.imgproc.Imgproc.resize;
           });
       }
 
-
       // reproduce la frase con el codigo de idioma especificado
       private Boolean reproducirFrase(String frase, String codigoIdioma) {
+
+          activarTTSListener();
+
           Locale loc = new Locale(codigoIdioma, "", "");
           if(tts.isLanguageAvailable(loc) >= TextToSpeech.LANG_AVAILABLE){
               tts.setLanguage(loc);
@@ -584,6 +617,25 @@ import static org.opencv.imgproc.Imgproc.resize;
               tts.speak(frase, TextToSpeech.QUEUE_FLUSH, null);
           }
           return true;
+      }
+
+      private void activarTTSListener(){
+          tts.setOnUtteranceProgressListener(new UtteranceProgressListener() {
+              @Override
+              public void onDone(String utteranceId) {
+                  Log.d("MainActivity", "TTS finished");
+                  ttsFinished = true;
+              }
+
+              @Override
+              public void onError(String utteranceId) {
+              }
+
+              @Override
+              public void onStart(String utteranceId) {
+                  Log.d("MainActivity", "TTS comienza");
+              }
+          });
       }
 
       private void restartApp() {
